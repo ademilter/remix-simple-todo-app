@@ -1,58 +1,92 @@
 import type { ActionFunction, LoaderFunction } from "remix";
-import {
-  Form,
-  json,
-  useActionData,
-  useLoaderData,
-  useTransition,
-  redirect,
-} from "remix";
+import { Form, useLoaderData, useTransition, redirect } from "remix";
 import Todo from "~/components/todo";
-import { fetchData, insertData } from "~/utils/database";
-import { useEffect } from "react";
+import { fetchData, insertOrUpdateData } from "~/utils/database";
+import { useEffect, useRef } from "react";
+
+type Task = { id: string; text: string; status: boolean };
 
 export const loader: LoaderFunction = async () => {
-  try {
-    return await fetchData();
-  } catch (error) {
-    return [];
-  }
+  return await fetchData();
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  try {
-    const form = await request.formData();
-    const task = form.get("task");
-    await insertData({ text: task });
-    return redirect("/");
-  } catch (error) {
-    return json(error, {
-      status: 400,
+  const form = await request.formData();
+  const text = form.get("text");
+
+  if (request.method === "PUT") {
+    const id = form.get("id");
+    const status = form.get("status");
+
+    await insertOrUpdateData(id!.toString(), {
+      text,
+      status: !status,
     });
   }
+
+  if (request.method === "POST") {
+    const id = Date.now().toString();
+    const status = false;
+
+    await insertOrUpdateData(id, { text, status });
+  }
+
+  return redirect("/");
 };
 
 export default function Index() {
-  const actionMessage = useActionData();
-  const { submission } = useTransition();
-  let tasks = useLoaderData();
+  const transition = useTransition();
+  const tasks: Task[] = useLoaderData();
+
+  const uncheckedTasks = tasks.filter((task) => !task.status);
+  const checkedTasks = tasks.filter((task) => task.status);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (transition.state !== "loading") return;
+    formRef.current?.reset();
+    inputRef.current?.focus();
+  }, [transition.state]);
 
   return (
-    <div className="bg-gray-100 p-10">
-      <Form method="post" className="grid grid-cols-1 gap-4">
+    <div className="pt-32 max-w-md mx-auto">
+      <Form ref={formRef} method="post">
         <input
+          ref={inputRef}
           type="text"
-          name="task"
-          className="border border-solid border-gray-400"
-          disabled={!!submission}
+          name="text"
+          className="w-full py-3 px-4 bg-gray-100 p-2 rounded-md placeholder-gray-400
+          disabled:text-gray-600 disabled:bg-gray-200"
+          placeholder="What needs to be done?"
+          disabled={!!transition.submission}
         />
       </Form>
 
-      <div className="">
-        {tasks.map((task: { id: string; text: string }) => (
-          <Todo key={task.id}>{task.text}</Todo>
+      <div className="mt-6 divide-y divide-gray-100">
+        {uncheckedTasks.map((task) => (
+          <Todo key={task.id} id={task.id} status={task.status}>
+            {task.text}
+          </Todo>
         ))}
       </div>
+
+      {checkedTasks.length > 0 && (
+        <details className="mt-6">
+          <summary className="text-gray-600">
+            <span>Completed ({checkedTasks.length})</span>
+          </summary>
+
+          <div className="divide-y divide-gray-100">
+            {checkedTasks.map((task) => (
+              <Todo key={task.id} id={task.id} status={task.status}>
+                {task.text}
+              </Todo>
+            ))}
+          </div>
+        </details>
+      )}
     </div>
   );
 }
