@@ -1,4 +1,4 @@
-import { hgetall, hset } from "@upstash/redis";
+import { hgetall, hset, hdel } from "@upstash/redis";
 const DATABASE_KEY = process.env.DATABASE_KEY || "remix-with-upstash";
 
 export function fetchData() {
@@ -21,6 +21,16 @@ export function fetchData() {
 export function insertOrUpdateData(id: string, task: object) {
   return new Promise(async (resolve, reject) => {
     const { data, error } = await hset(DATABASE_KEY, id, JSON.stringify(task));
+
+    if (error) reject(error);
+
+    resolve(data);
+  });
+}
+
+export function deleteData(id: string) {
+  return new Promise(async (resolve, reject) => {
+    const { data, error } = await hdel(DATABASE_KEY, id);
 
     if (error) reject(error);
 
