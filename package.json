@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run build:css && remix build",
     "build:css": "tailwindcss -i ./styles/tailwind.css -o app/tailwind.css --minify",
-    "dev": "concurrently \"pnpm run dev:css\" \"node -r dotenv/config ./node_modules/@remix-run/dev/cli.js\"",
+    "dev": "concurrently \"pnpm run dev:css\" \"remix dev\"",
     "dev:css": "tailwindcss -i ./styles/tailwind.css -o app/tailwind.css --watch",
     "postinstall": "remix setup node",
     "start": "remix-serve build"

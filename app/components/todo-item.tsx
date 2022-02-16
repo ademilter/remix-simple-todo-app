@@ -17,9 +17,11 @@ export default function TodoItem({ id, text, status, active = false }: Props) {
       )}
     >
       <Form method="put">
-        <input hidden type="text" name="id" defaultValue={id} />
-        <input hidden type="text" name="text" defaultValue={text} />
-        <input hidden type="checkbox" name="status" defaultChecked={status} />
+        <input
+          type="hidden"
+          name="todo"
+          defaultValue={JSON.stringify({ id, text, status })}
+        />
         <button
           type="submit"
           className={cx(
