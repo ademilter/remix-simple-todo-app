@@ -14,8 +14,8 @@ export default function TodoItem({ id, text, status, active = false }: Props) {
   return (
     <div
       className={cx(
-        "group flex items-center space-x-3 p-3 border-gray-200",
-        active ? "opacity-20" : ""
+        "group flex items-center space-x-3 p-3 border-gray-200 rounded-md",
+        active ? "opacity-50 bg-gray-200 border-transparent" : ""
       )}
     >
       <Form method="put">

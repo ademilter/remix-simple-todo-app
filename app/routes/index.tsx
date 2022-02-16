@@ -48,7 +48,7 @@ export default function Index() {
   useEffect(() => {
     if (transition.state !== "loading") return;
     formRef.current?.reset();
-    inputRef.current?.focus();
+    // inputRef.current?.focus();
   }, [transition.state]);
 
   return (
@@ -62,7 +62,7 @@ export default function Index() {
           className="w-full py-3 px-4 bg-gray-100 p-2 rounded-md placeholder-gray-400
           disabled:text-gray-600 disabled:bg-gray-200"
           placeholder="What needs to be done?"
-          disabled={!!transition.submission}
+          disabled={transition.submission?.method === "POST"}
         />
       </Form>
 
@@ -77,7 +77,7 @@ export default function Index() {
       </div>
 
       {checkedTodos.length > 0 && (
-        <details className="mt-6 rounded-md open:bg-gray-50 open:-mx-4 open:py-3 open:px-4">
+        <details className="mt-6 rounded-md open:bg-teal-50 open:-mx-4 open:py-3 open:px-4">
           <summary className="inline-flex text-sm text-gray-500 cursor-pointer">
             Completed ({checkedTodos.length})
           </summary>
