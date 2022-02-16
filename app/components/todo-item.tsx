@@ -9,8 +9,6 @@ type Props = Todo & {
 };
 
 export default function TodoItem({ id, text, status, active = false }: Props) {
-  console.log(id, text, status, active);
-
   return (
     <div
       className={cx(

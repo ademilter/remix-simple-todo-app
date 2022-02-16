@@ -39,6 +39,9 @@ export default function Index() {
   const transition = useTransition();
   const todos: Todo[] = useLoaderData();
 
+  const isCreating = transition.submission?.method === "POST";
+  const isAdding = transition.state === "submitting" && isCreating;
+
   const uncheckedTodos = todos.filter((todo) => !todo.status);
   const checkedTodos = todos.filter((todo) => todo.status);
 
@@ -46,10 +49,10 @@ export default function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (transition.state !== "loading") return;
+    if (isAdding) return;
     formRef.current?.reset();
-    // inputRef.current?.focus();
-  }, [transition.state]);
+    inputRef.current?.focus();
+  }, [isAdding]);
 
   return (
     <main className="pt-32 px-4 max-w-md mx-auto">
@@ -62,7 +65,7 @@ export default function Index() {
           className="w-full py-3 px-4 bg-gray-100 p-2 rounded-md placeholder-gray-400
           disabled:text-gray-600 disabled:bg-gray-200"
           placeholder="What needs to be done?"
-          disabled={transition.submission?.method === "POST"}
+          disabled={isCreating}
         />
       </Form>
 
