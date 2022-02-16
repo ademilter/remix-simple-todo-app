@@ -10,11 +10,11 @@ export function fetchData() {
     let tasks = [];
     for (let i = 0; i < data.length; i++) {
       const keyValue = JSON.parse(data[i + 1]);
-      tasks.push({ id: parseInt(data[i]), ...keyValue });
+      tasks.push({ id: data[i], ...keyValue });
       i++;
     }
 
-    resolve(tasks.sort((a, b) => b.id - a.id));
+    resolve(tasks.sort((a, b) => parseInt(b.id) - parseInt(a.id)));
   });
 }
 

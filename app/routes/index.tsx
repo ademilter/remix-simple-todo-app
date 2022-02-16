@@ -1,7 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "remix";
-import type { Task } from "~/components/todo";
+import type { Todo } from "~/components/todo-item";
 import { Form, useLoaderData, useTransition, redirect } from "remix";
-import Todo from "~/components/todo";
+import TodoItem from "~/components/todo-item";
 import { deleteData, fetchData, insertOrUpdateData } from "~/utils/database";
 import { useEffect, useRef } from "react";
 
@@ -37,10 +37,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const transition = useTransition();
-  const tasks: Task[] = useLoaderData();
+  const todos: Todo[] = useLoaderData();
 
-  const uncheckedTasks = tasks.filter((task) => !task.status);
-  const checkedTasks = tasks.filter((task) => task.status);
+  const uncheckedTodos = todos.filter((todo) => !todo.status);
+  const checkedTodos = todos.filter((todo) => todo.status);
 
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +58,8 @@ export default function Index() {
           ref={inputRef}
           type="text"
           name="text"
-          className="w-full py-3 px-4 bg-gray-100 p-2 rounded-md shadow placeholder-gray-400
+          autoComplete="off"
+          className="w-full py-3 px-4 bg-gray-100 p-2 rounded-md placeholder-gray-400
           disabled:text-gray-600 disabled:bg-gray-200"
           placeholder="What needs to be done?"
           disabled={!!transition.submission}
@@ -66,20 +67,28 @@ export default function Index() {
       </Form>
 
       <div className="mt-6 divide-y divide-gray-100">
-        {uncheckedTasks.map((task) => (
-          <Todo key={task.id} {...task} />
+        {uncheckedTodos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            {...todo}
+            active={transition.submission?.formData.get("id") === todo.id}
+          />
         ))}
       </div>
 
-      {checkedTasks.length > 0 && (
-        <details className="mt-6 rounded-md open:bg-gray-50 open:-mx-3 open:py-3 open:px-4">
+      {checkedTodos.length > 0 && (
+        <details className="mt-6 rounded-md open:bg-gray-50 open:-mx-4 open:py-3 open:px-4">
           <summary className="inline-flex text-sm text-gray-500 cursor-pointer">
-            Completed ({checkedTasks.length})
+            Completed ({checkedTodos.length})
           </summary>
 
           <div className="mt-2 divide-y divide-gray-100">
-            {checkedTasks.map((task) => (
-              <Todo key={task.id} {...task} />
+            {checkedTodos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                {...todo}
+                active={transition.submission?.formData.get("id") === todo.id}
+              />
             ))}
           </div>
         </details>
