@@ -1,5 +1,12 @@
 import type { ActionFunction, LoaderFunction } from "remix";
-import { Form, useLoaderData, useTransition, redirect } from "remix";
+import {
+  Form,
+  useLoaderData,
+  useActionData,
+  useTransition,
+  redirect,
+  json,
+} from "remix";
 import { useEffect, useRef } from "react";
 import type { Todo } from "~/components/todo-item";
 import TodoItem from "~/components/todo-item";
@@ -12,10 +19,11 @@ export const loader: LoaderFunction = async () => {
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
 
-  const text = form.get("text");
-
   if (request.method === "POST") {
-    if (!text) return redirect("/");
+    const text = form.get("text") as string;
+    if (!text || !text.trim()) {
+      return json({ error: "Text is required" });
+    }
     await insertOrUpdateData(Date.now().toString(), { text, status: false });
   }
 
@@ -37,6 +45,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Index() {
+  const actionData = useActionData();
   const transition = useTransition();
   const todos: Todo[] = useLoaderData();
 
@@ -62,6 +71,7 @@ export default function Index() {
           ref={inputRef}
           type="text"
           name="text"
+          required
           autoComplete="off"
           className="w-full p-2 bg-gray-100 rounded-md placeholder-gray-400
           disabled:text-gray-600 disabled:bg-gray-200"
@@ -69,6 +79,10 @@ export default function Index() {
           disabled={isCreating}
         />
       </Form>
+
+      {actionData?.error && (
+        <p className="mt-2 text-red-500">{actionData.error}</p>
+      )}
 
       <div className="mt-6 divide-y divide-gray-100">
         {uncheckedTodos.map((todo) => (
