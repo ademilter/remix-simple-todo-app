@@ -73,18 +73,22 @@ export default function Index() {
           name="text"
           required
           autoComplete="off"
-          className="w-full p-2 bg-gray-100 rounded-md placeholder-gray-400
-          disabled:text-gray-600 disabled:bg-gray-200"
+          className="w-full p-3 bg-gray-100 rounded-md placeholder-gray-400
+          ring-offset-4 ring-gray-500 ring-offset-gray-50
+          focus:outline-none focus:ring-2
+          disabled:opacity-50"
           placeholder="What needs to be done?"
           disabled={isCreating}
         />
       </Form>
 
       {actionData?.error && (
-        <p className="mt-2 text-red-500">{actionData.error}</p>
+        <p className="mt-3 p-3 bg-red-50 text-red-700 rounded-md">
+          {actionData.error}
+        </p>
       )}
 
-      <div className="mt-6 divide-y divide-gray-100">
+      <div className="mt-8">
         {uncheckedTodos.map((todo) => (
           <TodoItem
             key={todo.id}
@@ -95,8 +99,8 @@ export default function Index() {
       </div>
 
       {checkedTodos.length > 0 && (
-        <details className="mt-6 rounded-md open:bg-teal-50 open:-mx-4 open:py-3 open:px-4">
-          <summary className="inline-flex text-sm text-gray-500 cursor-pointer">
+        <details className="mt-8 rounded-md open:bg-gray-50 open:-mx-4 open:py-3 open:px-4">
+          <summary className="inline-flex text-sm text-gray-400 cursor-pointer">
             Completed ({checkedTodos.length})
           </summary>
 
