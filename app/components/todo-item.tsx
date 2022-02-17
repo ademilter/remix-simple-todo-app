@@ -33,14 +33,14 @@ export default function TodoItem({ id, text, status, active = false }: Props) {
         </button>
       </Form>
 
-      <span className="flex-grow">{text}</span>
+      <span className="flex-grow line-clamp-3">{text}</span>
 
       {status && (
         <Form method="delete">
           <input hidden type="text" name="id" defaultValue={id} />
           <button
             type="submit"
-            className="px-1 py-0.5 text-xs text-red-600 bg-red-50 rounded hidden group-hover:flex"
+            className="px-1 py-0.5 text-xs text-red-600 bg-red-50 rounded opacity-0 group-hover:opacity-100"
           >
             Delete
           </button>
