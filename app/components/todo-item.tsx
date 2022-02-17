@@ -33,7 +33,7 @@ export default function TodoItem({ id, text, status, active = false }: Props) {
         </button>
       </Form>
 
-      <span className="flex-grow line-clamp-3">{text}</span>
+      <span className="flex-grow line-clamp-3 break-words">{text}</span>
 
       {status && (
         <Form method="delete">
